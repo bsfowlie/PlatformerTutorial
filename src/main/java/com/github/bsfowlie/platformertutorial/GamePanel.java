@@ -1,6 +1,8 @@
 package com.github.bsfowlie.platformertutorial;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
@@ -11,21 +13,13 @@ public class GamePanel extends JPanel {
 
   private final Random random;
 
-  private float xDelta = 100f;
-  private float yDelta = 100f;
+  private final List<MyRect> rects = new LinkedList<>();
 
-  private float xDir = 0.03f;
-  private float yDir = 0.03f;
-
-  private int frames = 0;
-  private long lastCheck = 0;
-
-  private Color color;
+  private final MyRect myRect;
 
   GamePanel() {
 
     random = new Random();
-    color = getRandomColor();
 
     var keyboardInputs = new KeyboardInputs(this);
     addKeyListener(keyboardInputs);
@@ -34,20 +28,30 @@ public class GamePanel extends JPanel {
     addMouseListener(mouseInputs);
     addMouseMotionListener(mouseInputs);
 
+    myRect = new MyRect(100, 100, 200, 50);
+    rects.add(myRect);
+
     setFocusable(true);
   }
 
-  public void changeXDelta(int value) {
-    xDelta += value;
+  public void changeXDelta(final int value) {
+
+    myRect.changeX(value);
   }
 
-  public void changeYDelta(int value) {
-    yDelta += value;
+  public void changeYDelta(final int value) {
+
+    myRect.changeY(value);
   }
 
-  public void setRectangle(int x, int y) {
-    xDelta = x;
-    yDelta = y;
+  public void setRectangle(final int x, final int y) {
+
+    myRect.setPos(x, y);
+  }
+
+  public void spawnRect(final int x, final int y) {
+
+    rects.addFirst(new MyRect(x, y));
   }
 
   @Override
@@ -55,55 +59,98 @@ public class GamePanel extends JPanel {
 
     super.paintComponent(g);
 
-    updateRectangle();
-
-    g.setColor(color);
-    g.fillRect((int) xDelta, (int) yDelta, 200, 50);
-
-    frames++;
-    if (System.currentTimeMillis() - lastCheck >= 1_000) {
-      lastCheck = System.currentTimeMillis();
-      System.out.println("FPS: " + frames);
-      frames = 0;
-    }
-
-    repaint();
-  }
-
-  private void updateRectangle() {
-
-    xDelta += xDir;
-    if (xDelta > 175) {
-      xDir = -xDir;
-      xDelta = 175;
-      color = getRandomColor();
-    }
-    if (xDelta < 0) {
-      xDir = -xDir;
-      xDelta = 0;
-      color = getRandomColor();
-    }
-
-    yDelta += yDir;
-    if (yDelta > 325) {
-      yDir = -yDir;
-      yDelta = 325;
-      color = getRandomColor();
-    }
-    if (yDelta < 0) {
-      yDir = -yDir;
-      yDelta = 0;
-      color = getRandomColor();
+    var bounds = this.getBounds();
+    for (final MyRect rect : rects) {
+      rect.updateRect(bounds);
+      rect.draw(g);
     }
   }
 
-  private Color getRandomColor() {
+  private class MyRect {
 
-    final int r = random.nextInt(255);
-    final int g = random.nextInt(255);
-    final int b = random.nextInt(255);
+    private final int w;
+    private final int h;
 
-    return new Color(r, g, b);
+    private double x;
+    private double y;
+
+    private double xDir;
+    private double yDir;
+
+    private Color color;
+
+    private MyRect(final int x, final int y) {
+
+      this(x, y, random.nextInt(50) + 25, random.nextInt(50) + 25);
+    }
+
+    private MyRect(final int x, final int y, final int w, final int h) {
+
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
+      color = newColor();
+      xDir = random.nextDouble(2) - 1;
+      yDir = random.nextDouble(2) - 1;
+    }
+
+    private Color newColor() {
+
+      final int r = random.nextInt(255);
+      final int g = random.nextInt(255);
+      final int b = random.nextInt(255);
+
+      return new Color(r, g, b);
+    }
+
+    private void changeX(final int value) {
+
+      x += value;
+    }
+
+    private void changeY(final int value) {
+
+      y += value;
+    }
+
+    private void setPos(final int x, final int y) {
+
+      this.x = x;
+      this.y = y;
+    }
+
+    private void updateRect(final Rectangle bounds) {
+
+      x += xDir;
+      if (x > bounds.getWidth() - w) {
+        xDir = -xDir;
+        x = (int) (bounds.getWidth() - w);
+        color = newColor();
+      }
+      if (x < 0) {
+        xDir = -xDir;
+        x = 0;
+        color = newColor();
+      }
+
+      y += yDir;
+      if (y > bounds.getHeight() - h) {
+        yDir = -yDir;
+        y = (int) (bounds.getHeight() - h);
+        color = newColor();
+      }
+      if (y < 0) {
+        yDir = -yDir;
+        y = 0;
+        color = newColor();
+      }
+    }
+
+    private void draw(Graphics g) {
+
+      g.setColor(color);
+      g.fillRect((int) x, (int) y, w, h);
+    }
   }
-
 }
