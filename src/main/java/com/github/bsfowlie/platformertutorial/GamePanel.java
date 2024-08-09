@@ -57,15 +57,15 @@ public class GamePanel extends JPanel {
   private void loadAnimations() {
 
     animations = new BufferedImage[9][];
-    animations[0] = new BufferedImage[5];
-    animations[1] = new BufferedImage[6];
-    animations[2] = new BufferedImage[3];
-    animations[3] = new BufferedImage[1];
-    animations[4] = new BufferedImage[2];
-    animations[5] = new BufferedImage[4];
-    animations[6] = new BufferedImage[3];
-    animations[7] = new BufferedImage[3];
-    animations[8] = new BufferedImage[3];
+    animations[IDLE] = new BufferedImage[5];
+    animations[RUNNING] = new BufferedImage[6];
+    animations[JUMP] = new BufferedImage[3];
+    animations[FALLING] = new BufferedImage[1];
+    animations[GROUND] = new BufferedImage[2];
+    animations[HIT] = new BufferedImage[4];
+    animations[ATTACK_1] = new BufferedImage[3];
+    animations[ATTACK_JUMP_1] = new BufferedImage[3];
+    animations[ATTACK_JUMP_2] = new BufferedImage[3];
     for (int row = 0; row < animations.length; row++) {
       for (int col = 0; col < animations[row].length; col++) {
         animations[row][col] =
