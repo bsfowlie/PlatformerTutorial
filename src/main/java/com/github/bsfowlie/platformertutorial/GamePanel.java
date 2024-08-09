@@ -66,6 +66,7 @@ public class GamePanel extends JPanel {
     animations[ATTACK_1] = new BufferedImage[3];
     animations[ATTACK_JUMP_1] = new BufferedImage[3];
     animations[ATTACK_JUMP_2] = new BufferedImage[3];
+
     for (int row = 0; row < animations.length; row++) {
       for (int col = 0; col < animations[row].length; col++) {
         animations[row][col] =
