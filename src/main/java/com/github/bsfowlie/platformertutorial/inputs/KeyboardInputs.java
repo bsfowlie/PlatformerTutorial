@@ -1,5 +1,7 @@
 package com.github.bsfowlie.platformertutorial.inputs;
 
+import static com.github.bsfowlie.platformertutorial.utils.Constants.Direction.*;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -25,19 +27,19 @@ public class KeyboardInputs implements KeyListener {
     switch (e.getKeyCode()) {
       case KeyEvent.VK_W:
       case KeyEvent.VK_UP:
-        gamePanel.changeYDelta(-5);
+        gamePanel.setDirection(UP);
         break;
       case KeyEvent.VK_A:
       case KeyEvent.VK_LEFT:
-        gamePanel.changeXDelta(-5);
+        gamePanel.setDirection(LEFT);
         break;
       case KeyEvent.VK_S:
       case KeyEvent.VK_DOWN:
-        gamePanel.changeYDelta(5);
+        gamePanel.setDirection(DOWN);
         break;
       case KeyEvent.VK_D:
       case KeyEvent.VK_RIGHT:
-        gamePanel.changeXDelta(5);
+        gamePanel.setDirection(RIGHT);
         break;
       default:
         break;
@@ -47,6 +49,20 @@ public class KeyboardInputs implements KeyListener {
   @Override
   public void keyReleased(final KeyEvent e) {
 
+    switch (e.getKeyCode()) {
+      case KeyEvent.VK_W:
+      case KeyEvent.VK_UP:
+      case KeyEvent.VK_A:
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_S:
+      case KeyEvent.VK_DOWN:
+      case KeyEvent.VK_D:
+      case KeyEvent.VK_RIGHT:
+        gamePanel.setMoving(false);
+        break;
+      default:
+        break;
+    }
   }
 
 }

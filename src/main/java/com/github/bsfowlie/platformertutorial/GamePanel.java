@@ -1,5 +1,8 @@
 package com.github.bsfowlie.platformertutorial;
 
+import static com.github.bsfowlie.platformertutorial.utils.Constants.Direction.*;
+import static com.github.bsfowlie.platformertutorial.utils.Constants.Player.*;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -21,6 +24,20 @@ public class GamePanel extends JPanel {
 
   private BufferedImage image;
 
+  private BufferedImage[][] animations;
+
+  private int aniTick;
+
+  private int aniIndex;
+
+  private final int aniSpeed = 15;
+
+  private int playerAction = IDLE;
+
+  private int playerDir = -1;
+
+  private boolean moving = false;
+
   GamePanel() {
 
     var keyboardInputs = new KeyboardInputs(this);
@@ -32,8 +49,29 @@ public class GamePanel extends JPanel {
 
     setPanelSize();
     importImage();
+    loadAnimations();
 
     setFocusable(true);
+  }
+
+  private void loadAnimations() {
+
+    animations = new BufferedImage[9][];
+    animations[0] = new BufferedImage[5];
+    animations[1] = new BufferedImage[6];
+    animations[2] = new BufferedImage[3];
+    animations[3] = new BufferedImage[1];
+    animations[4] = new BufferedImage[2];
+    animations[5] = new BufferedImage[4];
+    animations[6] = new BufferedImage[3];
+    animations[7] = new BufferedImage[3];
+    animations[8] = new BufferedImage[3];
+    for (int row = 0; row < animations.length; row++) {
+      for (int col = 0; col < animations[row].length; col++) {
+        animations[row][col] =
+            image.getSubimage(col * SUB_IMAGE_WIDTH, row * SUB_IMAGE_HEIGHT, SUB_IMAGE_WIDTH, SUB_IMAGE_HEIGHT);
+      }
+    }
   }
 
   private void importImage() {
@@ -55,20 +93,15 @@ public class GamePanel extends JPanel {
     setPreferredSize(size);
   }
 
-  public void changeXDelta(final int value) {
+  public void setDirection(final int direction) {
 
-    x += value;
+    playerDir = direction;
+    moving = true;
   }
 
-  public void changeYDelta(final int value) {
+  public void setMoving(final boolean moving) {
 
-    y += value;
-  }
-
-  public void setRectangle(final int x, final int y) {
-
-    this.x = x;
-    this.y = y;
+    this.moving = moving;
   }
 
   @Override
@@ -76,20 +109,60 @@ public class GamePanel extends JPanel {
 
     super.paintComponent(g);
 
-    var imageCol = 1;
-    var imageRow = 8;
-    var subimage = image.getSubimage(
-        imageCol * SUB_IMAGE_WIDTH,
-        imageRow * SUB_IMAGE_HEIGHT,
-        SUB_IMAGE_WIDTH,
-        SUB_IMAGE_HEIGHT);
+    setAnimation();
+    updatePos();
+    updateAnimationTick();
+
     g.drawImage(
-        subimage,
+        animations[1][aniIndex],
         (int) x,
         (int) y,
         2 * SUB_IMAGE_WIDTH,
         2 * SUB_IMAGE_HEIGHT,
         null);
+  }
+
+  private void setAnimation() {
+
+    if (moving) {
+      playerAction = RUNNING;
+    } else {
+      playerAction = IDLE;
+    }
+  }
+
+  private void updatePos() {
+
+    if (moving) {
+      switch (playerDir) {
+        case LEFT:
+          x -= 5;
+          break;
+        case UP:
+          y -= 5;
+          break;
+        case RIGHT:
+          x += 5;
+          break;
+        case DOWN:
+          y += 5;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  private void updateAnimationTick() {
+
+    aniTick++;
+    if (aniTick >= aniSpeed) {
+      aniTick = 0;
+      aniIndex++;
+      if (aniIndex >= animations[playerAction].length) {
+        aniIndex = 0;
+      }
+    }
   }
 
 }
