@@ -1,5 +1,7 @@
 package com.github.bsfowlie.platformertutorial;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import javax.swing.*;
 
 public class GameWindow {
@@ -14,6 +16,19 @@ public class GameWindow {
     jFrame.setResizable(false);
     jFrame.pack();
     jFrame.setVisible(true);
+    jFrame.addWindowFocusListener(new WindowFocusListener() {
+
+      @Override
+      public void windowGainedFocus(final WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowLostFocus(final WindowEvent e) {
+
+        gamePanel.getGame().windowFocusLost();
+      }
+    });
   }
 
 }
